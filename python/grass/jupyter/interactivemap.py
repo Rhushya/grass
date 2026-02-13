@@ -185,16 +185,18 @@ class Vector(Layer):
 
             with open(self._filename, encoding="utf-8") as file:
                 data = json.load(file)
+            layer_kwargs = self._layer_kwargs.copy()
             # allow using opacity directly to keep interface
             # consistent for both backends
-            if "opacity" in self._layer_kwargs:
-                opacity = self._layer_kwargs.pop("opacity")
-                if "style" in self._layer_kwargs:
-                    self._layer_kwargs["style"]["opacity"] = opacity
+            if "opacity" in layer_kwargs:
+                opacity = layer_kwargs.pop("opacity")
+                if "style" in layer_kwargs:
+                    layer_kwargs["style"] = layer_kwargs["style"].copy()
+                    layer_kwargs["style"]["opacity"] = opacity
                 else:
-                    self._layer_kwargs["style"] = {"opacity": opacity}
+                    layer_kwargs["style"] = {"opacity": opacity}
             geo_json = ipyleaflet.GeoJSON(
-                data=data, name=self._title, **self._layer_kwargs
+                data=data, name=self._title, **layer_kwargs
             )
             interactive_map.add(geo_json)
 
